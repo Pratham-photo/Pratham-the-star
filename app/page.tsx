@@ -1,10 +1,25 @@
 "use client"
 
-import React, { useEffect } from "react"
-import { site } from "@/lib/site"
+import React, { useEffect, useState } from "react"
+import { site, type ImageItem } from "@/lib/site"
 import { IntroLoader } from "@/components/intro-loader"
+import { Lightbox } from "@/components/lightbox"
 
 export default function Home() {
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxPhotos, setLightboxPhotos] = useState<ImageItem[]>([])
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  const openLightbox = (photos: ImageItem[], index: number) => {
+    setLightboxPhotos(photos)
+    setLightboxIndex(index)
+    setLightboxOpen(true)
+  }
+
+  const closeLightbox = () => {
+    setLightboxOpen(false)
+  }
+
   useEffect(() => {
     // Mouse Blob Follower
     const blob = document.getElementById("cursor-blob")
@@ -175,100 +190,129 @@ export default function Home() {
         <section id="work" className="container">
           <div className="sticky-type">ARCHIVE</div>
 
-          {site.projects.map((project, index) => (
-            <React.Fragment key={project.id}>
-              {index === 4 && (
-                <div style={{ maxWidth: "800px", marginBottom: "200px" }}>
-                  <span
-                    style={{
-                      fontFamily: "var(--syne)",
-                      color: "var(--accent)",
-                      display: "block",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {site.about.label}
-                  </span>
-                  {site.about.middle.map((paragraph, mIdx) => (
-                    <p
-                      key={mIdx}
+          {site.projects.map((project, index) => {
+            const galleryPhotos = project.gallery || project.photos || []
+            const fullSeriesPhotos = [project.cover, ...galleryPhotos]
+
+            return (
+              <React.Fragment key={project.id}>
+                {index === 4 && (
+                  <div style={{ maxWidth: "800px", marginBottom: "200px" }}>
+                    <span
                       style={{
-                        fontSize: "1.5rem",
-                        fontWeight: 300,
-                        color: "#888",
-                        marginBottom: "24px",
+                        fontFamily: "var(--syne)",
+                        color: "var(--accent)",
+                        display: "block",
+                        marginBottom: "20px",
                       }}
                     >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              )}
+                      {site.about.label}
+                    </span>
+                    {site.about.middle.map((paragraph, mIdx) => (
+                      <p
+                        key={mIdx}
+                        style={{
+                          fontSize: "1.5rem",
+                          fontWeight: 300,
+                          color: "#888",
+                          marginBottom: "24px",
+                        }}
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                )}
 
-              <div
-                className="project-row"
-                style={index % 2 === 1 ? { flexDirection: "row-reverse" } : undefined}
-              >
-                <div className="project-info">
-                  <span style={{ fontFamily: "var(--syne)", color: "var(--accent)" }}>{project.category}</span>
-                  <h3 className="huge-type" style={{ fontSize: "6rem", margin: "20px 0" }}>
-                    {project.title}
-                  </h3>
-                  <p>{project.description}</p>
-                  <div className="divider"></div>
-                  <p>YEAR: {project.year}</p>
+                <div
+                  className="project-row"
+                  style={index % 2 === 1 ? { flexDirection: "row-reverse" } : undefined}
+                >
+                  <div className="project-info">
+                    <span style={{ fontFamily: "var(--syne)", color: "var(--accent)" }}>{project.category}</span>
+                    <h3 className="huge-type" style={{ fontSize: "6rem", margin: "20px 0" }}>
+                      {project.title}
+                    </h3>
+                    <p>{project.description}</p>
+                    <div className="divider"></div>
+                    <p>YEAR: {project.year}</p>
 
-                  {project.photos && project.photos.length > 0 && (
+                    {galleryPhotos && galleryPhotos.length > 0 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "10px",
+                          marginTop: "30px",
+                          paddingBottom: "8px",
+                        }}
+                      >
+                        {galleryPhotos.map((photo, pIdx) => (
+                          <img
+                            key={pIdx}
+                            src={photo.src}
+                            alt={photo.alt}
+                            loading="lazy"
+                            className="comp-image"
+                            onClick={() => openLightbox(fullSeriesPhotos, pIdx + 1)}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`View photo ${pIdx + 1} of ${project.title}`}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault()
+                                openLightbox(fullSeriesPhotos, pIdx + 1)
+                              }
+                            }}
+                            style={{
+                              width: "60px",
+                              height: "80px",
+                              objectFit: "cover",
+                              objectPosition: photo.focus || "center",
+                              flexShrink: 0,
+                              cursor: "zoom-in",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="project-media">
+                    <img
+                      src={project.cover.src}
+                      alt={project.cover.alt}
+                      loading="lazy"
+                      className="project-image"
+                      onClick={() => openLightbox(fullSeriesPhotos, 0)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`View cover photo of ${project.title}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          openLightbox(fullSeriesPhotos, 0)
+                        }
+                      }}
+                      style={{
+                        ...(project.cover.focus ? { objectPosition: project.cover.focus } : {}),
+                        cursor: "zoom-in",
+                      }}
+                    />
                     <div
-                      style={{
-                        display: "flex",
-                        gap: "10px",
-                        marginTop: "30px",
-                        overflowX: "auto",
-                        paddingBottom: "8px",
-                      }}
+                      className="floating-label huge-type outline-text"
+                      style={
+                        index % 2 === 1
+                          ? { fontSize: "8rem", right: "auto", left: "-100px" }
+                          : { fontSize: "8rem" }
+                      }
                     >
-                      {project.photos.map((photo, pIdx) => (
-                        <img
-                          key={pIdx}
-                          src={photo.src}
-                          alt={photo.alt}
-                          loading="lazy"
-                          className="comp-image"
-                          style={{
-                            width: "60px",
-                            height: "80px",
-                            objectFit: "cover",
-                            objectPosition: photo.focus || "center",
-                            flexShrink: 0,
-                          }}
-                        />
-                      ))}
+                      {project.label}
                     </div>
-                  )}
-                </div>
-                <div className="project-media">
-                  <img
-                    src={project.cover.src}
-                    alt={project.cover.alt}
-                    loading="lazy"
-                    className="project-image"
-                    style={project.cover.focus ? { objectPosition: project.cover.focus } : undefined}
-                  />
-                  <div
-                    className="floating-label huge-type outline-text"
-                    style={
-                      index % 2 === 1
-                        ? { fontSize: "8rem", right: "auto", left: "-100px" }
-                        : { fontSize: "8rem" }
-                    }
-                  >
-                    {project.label}
                   </div>
                 </div>
-              </div>
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            )
+          })}
         </section>
 
         {/* OVERLAPPING COMPOSITION SECTION */}
@@ -280,7 +324,20 @@ export default function Home() {
                 className="comp-image"
                 alt={site.composition.images[0].alt}
                 loading="lazy"
-                style={site.composition.images[0].focus ? { objectPosition: site.composition.images[0].focus } : undefined}
+                onClick={() => openLightbox(site.composition.images, 0)}
+                tabIndex={0}
+                role="button"
+                aria-label="View photo 1 of composition series"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    openLightbox(site.composition.images, 0)
+                  }
+                }}
+                style={{
+                  ...(site.composition.images[0].focus ? { objectPosition: site.composition.images[0].focus } : {}),
+                  cursor: "zoom-in",
+                }}
               />
             </div>
             <div className="comp-item-2">
@@ -289,7 +346,20 @@ export default function Home() {
                 className="comp-image"
                 alt={site.composition.images[1].alt}
                 loading="lazy"
-                style={site.composition.images[1].focus ? { objectPosition: site.composition.images[1].focus } : undefined}
+                onClick={() => openLightbox(site.composition.images, 1)}
+                tabIndex={0}
+                role="button"
+                aria-label="View photo 2 of composition series"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    openLightbox(site.composition.images, 1)
+                  }
+                }}
+                style={{
+                  ...(site.composition.images[1].focus ? { objectPosition: site.composition.images[1].focus } : {}),
+                  cursor: "zoom-in",
+                }}
               />
             </div>
             <div className="comp-item-3">
@@ -318,7 +388,20 @@ export default function Home() {
                 className="comp-image"
                 alt={site.composition.images[2].alt}
                 loading="lazy"
-                style={site.composition.images[2].focus ? { objectPosition: site.composition.images[2].focus } : undefined}
+                onClick={() => openLightbox(site.composition.images, 2)}
+                tabIndex={0}
+                role="button"
+                aria-label="View photo 3 of composition series"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    openLightbox(site.composition.images, 2)
+                  }
+                }}
+                style={{
+                  ...(site.composition.images[2].focus ? { objectPosition: site.composition.images[2].focus } : {}),
+                  cursor: "zoom-in",
+                }}
               />
             </div>
           </div>
@@ -420,6 +503,13 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      <Lightbox
+        isOpen={lightboxOpen}
+        photos={lightboxPhotos}
+        initialIndex={lightboxIndex}
+        onClose={closeLightbox}
+      />
     </>
   )
 }
