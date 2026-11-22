@@ -1,14 +1,19 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { site, type ImageItem } from "@/lib/site"
 import { IntroLoader } from "@/components/intro-loader"
 import { Lightbox } from "@/components/lightbox"
+import { SiteNav } from "@/components/site-nav"
+import { SiteFooter } from "@/components/site-footer"
+import { usePageEffects } from "@/hooks/use-page-effects"
 
 export default function Home() {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxPhotos, setLightboxPhotos] = useState<ImageItem[]>([])
   const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  usePageEffects()
 
   const openLightbox = (photos: ImageItem[], index: number) => {
     setLightboxPhotos(photos)
@@ -20,97 +25,12 @@ export default function Home() {
     setLightboxOpen(false)
   }
 
-  useEffect(() => {
-    // Mouse Blob Follower
-    const blob = document.getElementById("cursor-blob")
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = e.clientX
-      const y = e.clientY
-      if (blob) {
-        blob.style.transform = `translate(${x - 200}px, ${y - 200}px)`
-      }
-    }
-    document.addEventListener("mousemove", handleMouseMove)
-
-    // Parallax Effect
-    const handleScroll = () => {
-      const scroll = window.pageYOffset
-
-      // Hero parallax
-      const parallaxTexts = document.querySelectorAll(".parallax-text")
-      parallaxTexts.forEach((text) => {
-        const speed = text.getAttribute("data-speed")
-        if (speed) {
-          ;(text as HTMLElement).style.transform = `translateX(${scroll * Number.parseFloat(speed) * 0.1}px)`
-        }
-      })
-
-      const heroImg = document.getElementById("hero-img")
-      if (heroImg) {
-        heroImg.style.transform = `translate(-50%, calc(-50% + ${scroll * 0.2}px)) scale(${1 + scroll * 0.0005})`
-      }
-
-      // Floating labels in project section
-      const labels = document.querySelectorAll(".floating-label")
-      labels.forEach((label, index) => {
-        const direction = index % 2 === 0 ? 1 : -1
-        ;(label as HTMLElement).style.transform = `translateY(${scroll * 0.1 * direction}px)`
-      })
-    }
-    window.addEventListener("scroll", handleScroll)
-
-    // Simple reveal on enter (Intersection Observer)
-    const observerOptions = {
-      threshold: 0.1,
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("active")
-        }
-      })
-    }, observerOptions)
-
-    document.querySelectorAll(".reveal-text").forEach((text) => {
-      observer.observe(text)
-    })
-
-    // Add smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", function (this: HTMLAnchorElement, e) {
-        e.preventDefault()
-        const href = this.getAttribute("href")
-        if (href) {
-          document.querySelector(href)?.scrollIntoView({
-            behavior: "smooth",
-          })
-        }
-      })
-    })
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      window.removeEventListener("scroll", handleScroll)
-      observer.disconnect()
-    }
-  }, [])
-
   return (
     <>
       <IntroLoader />
       <div className="blob" id="cursor-blob"></div>
 
-      <nav>
-        <div className="logo">{site.nav.logo}</div>
-        <ul className="nav-links">
-          {site.nav.links.map((link) => (
-            <li key={link.href}>
-              <a href={link.href}>{link.name}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <SiteNav />
 
       <main>
         {/* HERO SECTION */}
@@ -408,100 +328,60 @@ export default function Home() {
         </section>
 
         {/* FOOTER */}
-        <footer id="contact">
-          <div className="container">
-            <div style={{ maxWidth: "800px", marginBottom: "100px" }}>
-              <span
-                style={{
-                  fontFamily: "var(--syne)",
-                  color: "var(--accent)",
-                  display: "block",
-                  marginBottom: "20px",
-                }}
-              >
-                {site.about.label}
-              </span>
-              <p
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 300,
-                  color: "#888",
-                  marginBottom: "24px",
-                }}
-              >
-                {site.about.outro.learning}
-              </p>
-              <p
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  color: "#ffffff",
-                  marginBottom: "24px",
-                }}
-              >
-                {site.about.outro.highlighted}
-              </p>
-              <p
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 300,
-                  color: "#888",
-                  marginBottom: "24px",
-                }}
-              >
-                {site.about.outro.closing}
-              </p>
-              <p
-                style={{
-                  fontSize: "1.5rem",
-                  fontFamily: "var(--syne)",
-                  color: "var(--accent)",
-                  marginTop: "40px",
-                }}
-              >
-                {site.about.outro.signature}
-              </p>
-            </div>
-
-            <div className="footer-cta">
-              <a href={`mailto:${site.contact.email}`}>{site.contact.cta}</a>
-            </div>
-            <div className="divider"></div>
-            <div
+        <SiteFooter>
+          <div style={{ maxWidth: "800px", marginBottom: "100px" }}>
+            <span
               style={{
-                display: "flex",
-                justifyContent: "space-between",
                 fontFamily: "var(--syne)",
-                fontSize: "0.8rem",
-                textTransform: "uppercase",
-                color: "#555",
+                color: "var(--accent)",
+                display: "block",
+                marginBottom: "20px",
               }}
             >
-              <div>
-                © {site.year} {site.name}
-              </div>
-              <div style={{ display: "flex", gap: "30px" }}>
-                {site.contact.socials.map((social, index) => {
-                  const isMailto = social.href?.startsWith("mailto:")
-                  return social.href ? (
-                    <a
-                      key={index}
-                      href={social.href}
-                      target={isMailto ? undefined : "_blank"}
-                      rel={isMailto ? undefined : "noopener noreferrer"}
-                      style={{ color: "inherit", textDecoration: "none" }}
-                    >
-                      {social.name}
-                    </a>
-                  ) : (
-                    <span key={index}>{social.name}</span>
-                  )
-                })}
-              </div>
-              <div>{site.contact.location}</div>
-            </div>
+              {site.about.label}
+            </span>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 300,
+                color: "#888",
+                marginBottom: "24px",
+              }}
+            >
+              {site.about.outro.learning}
+            </p>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                color: "#ffffff",
+                marginBottom: "24px",
+              }}
+            >
+              {site.about.outro.highlighted}
+            </p>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 300,
+                color: "#888",
+                marginBottom: "24px",
+              }}
+            >
+              {site.about.outro.closing}
+            </p>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                fontFamily: "var(--syne)",
+                color: "var(--accent)",
+                marginTop: "40px",
+              }}
+            >
+              {site.about.outro.signature}
+            </p>
           </div>
-        </footer>
+        </SiteFooter>
       </main>
 
       <Lightbox

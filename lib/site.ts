@@ -16,6 +16,58 @@ export interface ProjectItem {
   gallery: ImageItem[]
 }
 
+export interface AboutPageData {
+  meta: {
+    title: string
+    description: string
+  }
+  intro: {
+    label: string
+    heading: string
+    roles: string
+    subroles: string
+    tags: string[]
+    floatingLabel: string
+    portrait: ImageItem
+  }
+  multitalent: {
+    number: string
+    statement: string
+    tiles: string[]
+    closing: string
+  }
+  confession: {
+    number: string
+    lead: string
+    quote: string
+    pretag: string
+    tags: string[]
+  }
+  inspiration: {
+    number: string
+    text: string
+    tiles: Array<{ number: string; text: string }>
+  }
+  truth: {
+    number: string
+    text: string
+    tiles: string[]
+    wideTile: string
+  }
+  dream: {
+    number: string
+    outlineText: string
+    statement: string
+  }
+  statement: {
+    text: string
+  }
+  closing: {
+    intro: string
+    highlight: string
+  }
+}
+
 export interface SiteConfig {
   name: string
   year: string
@@ -45,6 +97,7 @@ export interface SiteConfig {
       signature: string
     }
   }
+  aboutPage: AboutPageData
   marquee: string
   projects: ProjectItem[]
   composition: {
@@ -70,17 +123,97 @@ export const site: SiteConfig = {
     "links": [
       {
         "name": "Work",
-        "href": "#work"
+        "href": "/#work"
       },
       {
         "name": "About",
-        "href": "#about"
+        "href": "/about"
       },
       {
         "name": "Contact",
-        "href": "#contact"
+        "href": "/#contact"
       }
     ]
+  },
+  "aboutPage": {
+    "meta": {
+      "title": "ABOUT — PRATHAM PARIKH",
+      "description": "Digital artifacts and cinematic visual storytelling by Pratham Parikh."
+    },
+    "intro": {
+      "label": "PRATHAM PARIKH",
+      "heading": "HEY, I'M PRATHAM!",
+      "roles": "The Star. The Director. The Writer. The Storyteller. The Actor.",
+      "subroles": "And yes, someone who loves capturing moments through photography.",
+      "tags": [
+        "THE STAR",
+        "THE DIRECTOR",
+        "THE WRITER",
+        "THE STORYTELLER",
+        "THE ACTOR",
+        "PHOTOGRAPHER"
+      ],
+      "floatingLabel": "STAR",
+      "portrait": {
+        "src": "/work/pratham.jpeg",
+        "alt": "Portrait of Pratham Parikh"
+      }
+    },
+    "multitalent": {
+      "number": "001 / THE MULTITALENT",
+      "statement": "I believe I'm a multitalented person with a creative mind that never really stops imagining.",
+      "tiles": [
+        "Directing a scene",
+        "Writing a story",
+        "Performing in front of the camera",
+        "Creating something visually beautiful",
+        "Capturing a moment through my lens"
+      ],
+      "closing": "I love exploring every side of creativity."
+    },
+    "confession": {
+      "number": "002 / THE CONFESSION",
+      "lead": "Now, before you think I'm overconfident, over-smart, or someone who praises himself a little too much, let me tell you something: sometimes, you've got to be your own biggest cheerleader.",
+      "quote": "Khud ki tareef khud karna bhi ek art hai!",
+      "pretag": "Yes, I'm",
+      "tags": [
+        "A little self-obsessed",
+        "A little filmy",
+        "A little too ambitious"
+      ]
+    },
+    "inspiration": {
+      "number": "003 / THE INSPIRATION",
+      "text": "But there's a reason behind it. I follow Shah Rukh Khan, and one thing I've learned from him is to...",
+      "tiles": [
+        { "number": "01", "text": "Dream fearlessly" },
+        { "number": "02", "text": "Believe in yourself" },
+        { "number": "03", "text": "Own your ambitions" }
+      ]
+    },
+    "truth": {
+      "number": "004 / THE TRUTH",
+      "text": "I don't claim to be perfect, and I definitely don't know everything. I'm here to...",
+      "tiles": [
+        "LEARN",
+        "EXPERIMENT",
+        "MAKE MISTAKES",
+        "GROW"
+      ],
+      "wideTile": "Turn my imagination into reality"
+    },
+    "dream": {
+      "number": "005 / THE DREAM",
+      "outlineText": "BLOODY STAR",
+      "statement": "I may not be a star today, but I genuinely believe that one day, I'll become a bloody star in my own field."
+    },
+    "statement": {
+      "text": "This portfolio isn't about showing that I'm already successful. It's about showing what I'm capable of, what I love creating, and the person I'm working towards becoming."
+    },
+    "closing": {
+      "intro": "So, welcome to my world. A little dramatic, endlessly creative, unapologetically ambitious, and always dreaming big.",
+      "highlight": "Because why dream small when you can dream like a superstar?"
+    }
   },
   "hero": {
     "words": [
