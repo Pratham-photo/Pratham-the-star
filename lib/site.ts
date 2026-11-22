@@ -155,7 +155,7 @@ export const site: SiteConfig = {
       ],
       "floatingLabel": "STAR",
       "portrait": {
-        "src": "/work/pratham.jpeg",
+        "src": "/work/p.jpeg",
         "alt": "Portrait of Pratham Parikh"
       }
     },
